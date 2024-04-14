@@ -38,3 +38,7 @@ GPATH
 
 # eclipse setting
 .settings
+
+# ignore non-sdk changes
+applications
+components/3rdparty
