@@ -119,9 +119,9 @@ bl602_start:
 	sd ra, 8(sp)
 #endif
 
-#ifdef BL602_MATTER_SUPPORT
+// #ifdef BL602_MATTER_SUPPORT
     call setup_heap
-#endif
+// #endif
 
 // call global obj constructors
     la s1, __preinit_array_start
