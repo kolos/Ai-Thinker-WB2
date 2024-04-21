@@ -299,7 +299,7 @@ sntp_process(const struct sntp_timestamps *timestamps)
   sec  = (s32_t)lwip_ntohl(timestamps->xmit.sec);
   frac = lwip_ntohl(timestamps->xmit.frac);
 
-  printf("Processing...\r\n");
+  LWIP_DEBUGF(SNTP_DEBUG_STATE, ("Processing...\r\n"));
 #if SNTP_COMP_ROUNDTRIP
 # if SNTP_CHECK_RESPONSE >= 2
   if (timestamps->recv.sec != 0 || timestamps->recv.frac != 0)
@@ -344,7 +344,9 @@ sntp_process(const struct sntp_timestamps *timestamps)
   taskEXIT_CRITICAL();
 
   LWIP_UNUSED_ARG(frac); /* might be unused if only seconds are set */
-  printf("sntp_process: %ld, %" U32_F " us\r\n", sec + DIFF_SEC_1970_2036, SNTP_FRAC_TO_US(frac));
+  LWIP_DEBUGF(SNTP_DEBUG_STATE, ("sntp_process: %ld, %" U32_F " us\r\n",
+                                 sec + DIFF_SEC_1970_2036,
+                                 SNTP_FRAC_TO_US(frac)));
 }
 
 /**
@@ -458,7 +460,7 @@ sntp_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
   u8_t stratum;
   err_t err;
   
-  printf("SNTP time now\r\n");
+  LWIP_DEBUGF(SNTP_DEBUG_STATE, ("SNTP time now\r\n"));
 
   LWIP_UNUSED_ARG(arg);
   LWIP_UNUSED_ARG(pcb);
@@ -484,7 +486,7 @@ sntp_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
         if (stratum == SNTP_STRATUM_KOD) {
           /* Kiss-of-death packet. Use another server or increase UPDATE_DELAY. */
           err = SNTP_ERR_KOD;
-          printf("sntp_recv: Received Kiss-of-Death\r\n");
+          LWIP_DEBUGF(SNTP_DEBUG_WARN, ("sntp_recv: Received Kiss-of-Death\r\n"));
         } else {
           pbuf_copy_partial(p, &timestamps, sizeof(timestamps), SNTP_OFFSET_TIMESTAMPS);
 #if SNTP_CHECK_RESPONSE >= 2
@@ -519,7 +521,8 @@ sntp_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
 
   pbuf_free(p);
 
-  printf("Try process\r\n");
+  LWIP_DEBUGF(SNTP_DEBUG_STATE,
+                        ("sntp_recv: Try process\r\n"));
   if (err == ERR_OK) {
     /* correct packet received: process it it */
     sntp_process(&timestamps);
@@ -681,7 +684,7 @@ sntp_init(void)
 
   if (sntp_pcb == NULL) {
     sntp_pcb = udp_new_ip_type(IPADDR_TYPE_ANY);
-    printf("[SNTP] pcb isready, %p\r\n", sntp_pcb);
+    LWIP_DEBUGF(SNTP_DEBUG_STATE, ("[SNTP] pcb isready, %p\r\n", sntp_pcb));
     LWIP_ASSERT("Failed to allocate udp pcb for sntp client", sntp_pcb != NULL);
     if (sntp_pcb != NULL) {
       udp_recv(sntp_pcb, sntp_recv, NULL);
