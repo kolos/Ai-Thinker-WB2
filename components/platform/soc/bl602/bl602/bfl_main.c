@@ -140,6 +140,8 @@ void __attribute__((weak)) vAssertCalled(void)
 // #ifdef BL602_MATTER_SUPPORT
 void setup_heap(void)
 {
+    bl_sys_em_config();
+
     // Invoked during system boot via start.S
     vPortDefineHeapRegions(xHeapRegions);
 }

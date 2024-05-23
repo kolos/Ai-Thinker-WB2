@@ -23,5 +23,6 @@ void bl_sys_reset_system(void);
 int bl_sys_isxipaddr(uint32_t addr);
 int bl_sys_early_init(void);
 int bl_sys_init(void);
+int bl_sys_em_config(void);
 
 #endif
